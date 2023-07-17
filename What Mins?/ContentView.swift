@@ -32,6 +32,7 @@ struct ContentView: View {
     @AppStorage("Text_30m") var Text_30m: String = UserDefaults.standard.string(forKey: "Text_30m") ?? "30m"
     @AppStorage("Text_60m") var Text_60m: String = UserDefaults.standard.string(forKey: "Text_60m") ?? "60m"
     
+    
     @AppStorage("isFirstLaunch") private var isFirstLaunch: Bool = false
     @State private var isFirstPlace: String = ""
 
@@ -42,16 +43,18 @@ struct ContentView: View {
     @State private var btn30_selected: Bool = false
     @State private var btn60_selected: Bool = false
     
-    @State private var remainingTime: Int = 0
-    
     @AppStorage("speakMode") private var speakMode: Bool = true
+    @AppStorage("voiceMode") var voiceMode: String = UserDefaults.standard.string(forKey: "voiceMode") ?? "Voice Mode"
+    @AppStorage("vibMode") var vibMode: String = UserDefaults.standard.string(forKey: "vibMode") ?? "Vibration Mode"
     
     @State private var showToast = false
     @State private var hideToastTask: DispatchWorkItem?
     
+    @State private var progress: Double = 0.0
+    @State private var timer: Timer?
+    
+    
     var body: some View {
-             
-        let progress: Double = 0.5
         
         ZStack {
             if isUpdatingTime {
@@ -62,7 +65,7 @@ struct ContentView: View {
                     )
                     .frame(width:335, height:335)
                 Circle()
-                    .trim(from: 0, to: progress)
+                    .trim(from: 0, to: CGFloat(progress))
                     .stroke(
                         Color.pink,
                         style: StrokeStyle(
@@ -70,8 +73,8 @@ struct ContentView: View {
                             lineCap: .round
                         )
                     )
-                    .rotationEffect(.degrees(-90))
                     .animation(.easeOut, value: progress)
+                    .rotationEffect(.degrees(-90))
                     .frame(width:335, height:335)
             }
             
@@ -130,6 +133,8 @@ struct ContentView: View {
                                         Text_10m = "10분 "
                                         Text_30m = "30분 "
                                         Text_60m = "60분 "
+                                        voiceMode = "음성 모드 "
+                                        vibMode = "진동 모드 "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("ko-") {
@@ -157,6 +162,8 @@ struct ContentView: View {
                                         Text_10m = "10m "
                                         Text_30m = "30m "
                                         Text_60m = "60m "
+                                        voiceMode = "Voice Mode "
+                                        vibMode = "Vibration Mode "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("en_") {
@@ -184,6 +191,9 @@ struct ContentView: View {
                                         Text_10m = "10m "
                                         Text_30m = "30m "
                                         Text_60m = "60m "
+                                        voiceMode = "Voice Mode "
+                                        vibMode = "Vibration Mode "
+                                        
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("en_UK") {
@@ -206,14 +216,14 @@ struct ContentView: View {
                                         MinText = "Min "
                                         StartText = "Comienzo "
                                         StopText = "Detente. "
-                                        
-                                        
                                         Text_1m = "1m "
                                         Text_3m = "3m "
                                         Text_5m = "5m "
                                         Text_10m = "10m "
                                         Text_30m = "30m "
                                         Text_60m = "60m "
+                                        voiceMode = "Modo de voz "
+                                        vibMode = "Modo de vibración "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("es_") {
@@ -241,6 +251,8 @@ struct ContentView: View {
                                         Text_10m = "10分 "
                                         Text_30m = "30分 "
                                         Text_60m = "60分 "
+                                        voiceMode = "语音模式 "
+                                        vibMode = "振动模式 "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("zh-") {
@@ -268,6 +280,8 @@ struct ContentView: View {
                                         Text_10m = "10分 "
                                         Text_30m = "30分 "
                                         Text_60m = "60分 "
+                                        voiceMode = "おんせいモード "
+                                        vibMode = "しんどうモード "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("ja_") {
@@ -295,6 +309,8 @@ struct ContentView: View {
                                         Text_10m = "10m "
                                         Text_30m = "30m "
                                         Text_60m = "60m "
+                                        voiceMode = "Modus der Sprachmodus "
+                                        vibMode = "Modus der Schwingung "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("de_") {
@@ -322,6 +338,8 @@ struct ContentView: View {
                                         Text_10m = "10m "
                                         Text_30m = "30m "
                                         Text_60m = "60m "
+                                        voiceMode = "Mode vocal "
+                                        vibMode = "Mode vibratoire "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("fr_") {
@@ -349,6 +367,8 @@ struct ContentView: View {
                                         Text_10m = "10m "
                                         Text_30m = "30m "
                                         Text_60m = "60m "
+                                        voiceMode = "Modalità vocale "
+                                        vibMode = "Modalità vibratoria "
                                         UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
                                     }) {
                                         if selectedLanguage.hasPrefix("it_") {
@@ -379,7 +399,7 @@ struct ContentView: View {
                         .overlay{
                             VStack{
                                 if showToast {
-                                    ToastView(message: speakMode ? "보이스 모드 설정" : "진동모드 설정", showToast: $showToast)
+                                    ToastView(message: speakMode ? voiceMode : vibMode, showToast: $showToast)
                                         .padding(.top, 160)
                                 }
                                 
@@ -732,15 +752,53 @@ struct ContentView: View {
         
         let targetTime = calendar.date(bySettingHour: nextTargetHour, minute: nextTargetMinute, second: 0, of: Date())!
         let timeDiff = targetTime.timeIntervalSinceNow
-            targetTimeWorkItem = DispatchWorkItem {
+        
+        // 계산된 진행도를 설정합니다.
+        let totalTimeInterval = TimeInterval(selectedInterval * 60)
+        let elapsedTime = totalTimeInterval - timeDiff
+        let progressPercentage = elapsedTime / totalTimeInterval
+        progress = max(0, min(1, progressPercentage))
+            
+        targetTimeWorkItem = DispatchWorkItem {
             if isUpdatingTime {
                 speakCurrentTime()
                 updateTargetTime()
             }
         }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + timeDiff, execute: targetTimeWorkItem!)
         print("nextTarget Hour: \(nextTargetHour)")
         print("nextTarget Min: \(nextTargetMinute)")
+        
+        timer?.invalidate()
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            let currentTimeDiff = targetTime.timeIntervalSinceNow
+            let currentElapsedTime = totalTimeInterval - currentTimeDiff
+
+            if currentElapsedTime <= 0 {
+                // 타겟 시간에 도달하여 초기화
+                self.progress = 1.0
+                self.updateTargetTime()
+            } else {
+                let currentProgressPercentage = currentElapsedTime / totalTimeInterval
+                self.progress = max(0, min(1, currentProgressPercentage))
+            }
+        }
+
+    }
+    
+    // 앱이 비활성화될 때 타이머를 중지합니다.
+    func applicationWillResignActive() {
+        timer?.invalidate()
+        timer = nil
+    }
+
+    // 앱이 다시 활성화될 때 타이머를 시작합니다.
+    func applicationDidBecomeActive() {
+        if isUpdatingTime {
+            updateTargetTime()
+        }
     }
 
     // 무음모드 여부를 판단하여 소리 or 진동 출력
@@ -758,6 +816,7 @@ struct ContentView: View {
     }
 }
 
+// 토스트 표시 뷰
 struct ToastView: View {
     let message: String
     @Binding var showToast: Bool
@@ -773,7 +832,7 @@ struct ToastView: View {
                 .foregroundColor(.white)
                 .padding()
         }
-        .frame(maxWidth: 200, alignment: .center)
+        .frame(maxWidth: 300, alignment: .center)
         .opacity(showToast ? 1 : 0)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
