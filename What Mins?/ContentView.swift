@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var targetTimeWorkItem: DispatchWorkItem?
     @StateObject private var speechSynthesizer = SpeechSynthesizer()
     @Environment(\.colorScheme) var colorScheme
+    @State private var speakMode = true
     
     @AppStorage("sectionText") var sectionText: String = UserDefaults.standard.string(forKey: "sectionText") ?? "Country Language Settings"
     @AppStorage("LangText") var LangText: String = UserDefaults.standard.string(forKey: "LangText") ?? "Language"
@@ -360,6 +361,10 @@ struct ContentView: View {
                                 .transition(.scale)
                         }
                     }
+                    
+                    Toggle("소리모드", isOn:$speakMode)
+                        .padding(.horizontal, 135)
+                        .offset(x:0,y:-80)
                 
                     Text(currentTime)
                         .font(.system(size: 50, weight: isUpdatingTime ? .heavy : .light))
@@ -702,25 +707,11 @@ struct ContentView: View {
         formatter.timeStyle = .short
         
         let timeString = formatter.string(from: Date())
-        
-        DetectMuteMode { muteMode in
-            if muteMode {
-                
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                
-                speechSynthesizer.speak(timeString)
-                } else {
-                speechSynthesizer.speak(timeString)
-            }
+        if speakMode {
+            speechSynthesizer.speak(timeString)
+        } else {
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
         }
-    }
-    
-    // 무음모드 여부 판단
-    func DetectMuteMode(completion: @escaping (Bool) -> Void) {
-            SKMuteSwitchDetector.checkSwitch { (success: Bool, silent: Bool) in
-                let muteMode = success && silent
-                completion(muteMode)
-            }
     }
 }
 
