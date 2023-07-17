@@ -17,7 +17,6 @@ struct ContentView: View {
     @State private var targetTimeWorkItem: DispatchWorkItem?
     @StateObject private var speechSynthesizer = SpeechSynthesizer()
     @Environment(\.colorScheme) var colorScheme
-    @State private var speakMode = true
     
     @AppStorage("sectionText") var sectionText: String = UserDefaults.standard.string(forKey: "sectionText") ?? "Country Language Settings"
     @AppStorage("LangText") var LangText: String = UserDefaults.standard.string(forKey: "LangText") ?? "Language"
@@ -45,6 +44,11 @@ struct ContentView: View {
     
     @State private var remainingTime: Int = 0
     
+    @AppStorage("speakMode") private var speakMode: Bool = true
+    
+    @State private var showToast = false
+    @State private var hideToastTask: DispatchWorkItem?
+    
     var body: some View {
              
         let progress: Double = 0.5
@@ -70,301 +74,339 @@ struct ContentView: View {
                     .animation(.easeOut, value: progress)
                     .frame(width:335, height:335)
             }
+            
             VStack{
-                // Language Swap
-                Group {
-                    HStack {
-                        Menu {
-                            Section(LocalizedStringKey(sectionText)) {
-                                Button(action: {
-                                    // 한국어
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("ko-KR")
-                                    selectedLanguage = "ko-KR"
-                                    sectionText = "국가별 언어 설정 "
-                                    LangText = "언어 "
-                                    ActText = "⚡️ 활성화 ⚡️ "
-                                    InvText = "시간 간격: "
-                                    MinText = "분 "
-                                    StartText = "시작 "
-                                    StopText = "중지 "
-                                    Text_1m = "1분 "
-                                    Text_3m = "3분 "
-                                    Text_5m = "5분 "
-                                    Text_10m = "10분 "
-                                    Text_30m = "30분 "
-                                    Text_60m = "60분 "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("ko-") {
-                                        Label("한국어", systemImage: "checkmark")
-                                    } else {
-                                        Label("한국어", systemImage: selectedLanguage == "ko-KR" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 영어(미국)
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("en-US")
-                                    selectedLanguage = "en-US"
-                                    sectionText = "Country Language Settings "
-                                    LangText = "Language "
-                                    ActText = "⚡️ Activating ⚡️ "
-                                    InvText = "Interval: "
-                                    MinText = "Min "
-                                    StartText = "Start "
-                                    StopText = "Stop "
-                                    Text_1m = "1m "
-                                    Text_3m = "3m "
-                                    Text_5m = "5m "
-                                    Text_10m = "10m "
-                                    Text_30m = "30m "
-                                    Text_60m = "60m "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("en_") {
-                                        Label("English(US)", systemImage: "checkmark")
-                                    } else {
-                                        Label("English(US)", systemImage: selectedLanguage == "en-US" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 영어(영국)
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("en-UK")
-                                    selectedLanguage = "en-UK"
-                                    sectionText = "Country Language Settings "
-                                    LangText = "Language "
-                                    ActText = "⚡️ Activating ⚡️ "
-                                    InvText = "Interval: "
-                                    MinText = "Min "
-                                    StartText = "Start "
-                                    StopText = "Stop "
-                                    Text_1m = "1m "
-                                    Text_3m = "3m "
-                                    Text_5m = "5m "
-                                    Text_10m = "10m "
-                                    Text_30m = "30m "
-                                    Text_60m = "60m "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("en_UK") {
-                                        
-                                        Label("English(UK)", systemImage: "checkmark")
-                                    } else {
-                                        Label("English(UK)", systemImage: selectedLanguage == "en-UK" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 스페인어
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("es-ES")
-                                    selectedLanguage = "es-ES"
-                                    sectionText = "Configuraciones lingüísticas por país "
-                                    LangText = "El lenguaje "
-                                    ActText = "⚡️ activación ⚡️ "
-                                    InvText = "Intervalo: "
-                                    MinText = "Min "
-                                    StartText = "Comienzo "
-                                    StopText = "Detente. "
-                                    
-                                    
-                                    Text_1m = "1m "
-                                    Text_3m = "3m "
-                                    Text_5m = "5m "
-                                    Text_10m = "10m "
-                                    Text_30m = "30m "
-                                    Text_60m = "60m "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("es_") {
-                                        Label("Espagnol", systemImage: "checkmark")
-                                    } else {
-                                        Label("Espagnol", systemImage: selectedLanguage == "es-ES" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 중국어(홍콩기준)
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("zh-CN")
-                                    selectedLanguage = "zh-CN"
-                                    sectionText = "国家语言设置 "
-                                    LangText = "语文 "
-                                    ActText = "⚡️ 启动 ⚡️ "
-                                    InvText = "间隙: "
-                                    MinText = "分 "
-                                    StartText = "开始 "
-                                    StopText = "中止 "
-                                    Text_1m = "1分 "
-                                    Text_3m = "3分 "
-                                    Text_5m = "5分 "
-                                    Text_10m = "10分 "
-                                    Text_30m = "30分 "
-                                    Text_60m = "60分 "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("zh-") {
-                                        Label("中文", systemImage: "checkmark")
-                                    } else {
-                                        Label("中文", systemImage: selectedLanguage == "zh-CN" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 일본어
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("ja-JP")
-                                    selectedLanguage = "ja-JP"
-                                    sectionText = "国別言語設定 "
-                                    LangText = "げんご "
-                                    ActText = "⚡️ 活性化 ⚡️ "
-                                    InvText = "間隔: "
-                                    MinText = "分 "
-                                    StartText = "スタート "
-                                    StopText = "ストップ "
-                                    Text_1m = "1分 "
-                                    Text_3m = "3分 "
-                                    Text_5m = "5分 "
-                                    Text_10m = "10分 "
-                                    Text_30m = "30分 "
-                                    Text_60m = "60分 "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("ja_") {
-                                        Label("日本語", systemImage: "checkmark")
-                                    } else {
-                                        Label("日本語", systemImage: selectedLanguage == "ja-JP" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 독일어
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("de-DE")
-                                    selectedLanguage = "de-DE"
-                                    sectionText = "Spracheinstellungen "
-                                    LangText = "Sprache "
-                                    ActText = "⚡️ Aktivieren ⚡️ "
-                                    InvText = "Intervall: "
-                                    MinText = "Min "
-                                    StartText = "Beginn "
-                                    StopText = "Halt "
-                                    Text_1m = "1m "
-                                    Text_3m = "3m "
-                                    Text_5m = "5m "
-                                    Text_10m = "10m "
-                                    Text_30m = "30m "
-                                    Text_60m = "60m "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("de_") {
-                                        Label("Deutsch", systemImage: "checkmark")
-                                    } else {
-                                        Label("Deutsch", systemImage: selectedLanguage == "de-DE" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 프랑스어
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("fr-FR")
-                                    selectedLanguage = "fr-FR"
-                                    sectionText = "établissement des langues "
-                                    LangText = "Language "
-                                    ActText = "⚡️ Activation ⚡️ "
-                                    InvText = "Intervalle: "
-                                    MinText = "Min "
-                                    StartText = "Départ "
-                                    StopText = "Cessation "
-                                    Text_1m = "1m "
-                                    Text_3m = "3m "
-                                    Text_5m = "5m "
-                                    Text_10m = "10m "
-                                    Text_30m = "30m "
-                                    Text_60m = "60m "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("fr_") {
-                                        Label("Français", systemImage: "checkmark")
-                                    } else {
-                                        Label("Français", systemImage: selectedLanguage == "fr-FR" ? "checkmark" : "")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // 이탈리아어
-                                    isFirstLaunch = true
-                                    speechSynthesizer.updateSelectedLanguage("it-IT")
-                                    selectedLanguage = "it-IT"
-                                    sectionText = "Impostazione linguistica "
-                                    LangText = "Lingua "
-                                    ActText = "⚡️ Attivazione ⚡️ "
-                                    InvText = "Intervallo: "
-                                    MinText = "Min "
-                                    StartText = "princìpio "
-                                    StopText = "fermare "
-                                    Text_1m = "1m "
-                                    Text_3m = "3m "
-                                    Text_5m = "5m "
-                                    Text_10m = "10m "
-                                    Text_30m = "30m "
-                                    Text_60m = "60m "
-                                    UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
-                                }) {
-                                    if selectedLanguage.hasPrefix("it_") {
-                                        Label("Lingua italiana", systemImage: "checkmark")
-                                    } else {
-                                        Label("Lingua italiana", systemImage: selectedLanguage == "it-IT" ? "checkmark" : "")
-                                    }
-                                }
-                            }
+                // Language Swaper
+                if !isUpdatingTime {
+                    Group {
+                        HStack {
+                           
+                            Spacer()
                             
-                        } label: {
-                            Label(LocalizedStringKey(LangText), systemImage: "globe")
+                            Button(action: {
+                                
+                                withAnimation {
+                                    speakMode.toggle()
+                                    showToast = true
+                                }
+                                
+                                hideToastTask?.cancel()
+                                    let task = DispatchWorkItem {
+                                        withAnimation(.easeOut(duration: 0.3)) {
+                                            showToast = false
+                                        }
+                                    }
+                                    hideToastTask = task
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: task)
+                                
+                            }, label: {
+                                Image(systemName: speakMode ? "person.wave.2" : "iphone.radiowaves.left.and.right")
+                                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                                    .font(.largeTitle)
+                                    .transition(.scale)
+                                    .padding(.top, 20)
+                                    .padding(.trailing, 20)
+                                    .padding(.trailing, speakMode ? 11.0 : 0.0)
+                            })
                         }
-                        .onTapGesture {
-                            print("\(selectedLanguage)")
-                        }
-                        .padding(7)
-                        .padding(.leading, -3.0)
-                        .padding(.vertical, -5.0)
                         .overlay(
+                            Menu {
+                                Section(LocalizedStringKey(sectionText)) {
+                                    Button(action: {
+                                        // 한국어
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("ko-KR")
+                                        selectedLanguage = "ko-KR"
+                                        sectionText = "국가별 언어 설정 "
+                                        LangText = "언어 "
+                                        ActText = "⚡️ 활성화 ⚡️ "
+                                        InvText = "시간 간격: "
+                                        MinText = "분 "
+                                        StartText = "시작 "
+                                        StopText = "중지 "
+                                        Text_1m = "1분 "
+                                        Text_3m = "3분 "
+                                        Text_5m = "5분 "
+                                        Text_10m = "10분 "
+                                        Text_30m = "30분 "
+                                        Text_60m = "60분 "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("ko-") {
+                                            Label("한국어", systemImage: "checkmark")
+                                        } else {
+                                            Label("한국어", systemImage: selectedLanguage == "ko-KR" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 영어(미국)
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("en-US")
+                                        selectedLanguage = "en-US"
+                                        sectionText = "Country Language Settings "
+                                        LangText = "Language "
+                                        ActText = "⚡️ Activating ⚡️ "
+                                        InvText = "Interval: "
+                                        MinText = "Min "
+                                        StartText = "Start "
+                                        StopText = "Stop "
+                                        Text_1m = "1m "
+                                        Text_3m = "3m "
+                                        Text_5m = "5m "
+                                        Text_10m = "10m "
+                                        Text_30m = "30m "
+                                        Text_60m = "60m "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("en_") {
+                                            Label("English(US)", systemImage: "checkmark")
+                                        } else {
+                                            Label("English(US)", systemImage: selectedLanguage == "en-US" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 영어(영국)
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("en-UK")
+                                        selectedLanguage = "en-UK"
+                                        sectionText = "Country Language Settings "
+                                        LangText = "Language "
+                                        ActText = "⚡️ Activating ⚡️ "
+                                        InvText = "Interval: "
+                                        MinText = "Min "
+                                        StartText = "Start "
+                                        StopText = "Stop "
+                                        Text_1m = "1m "
+                                        Text_3m = "3m "
+                                        Text_5m = "5m "
+                                        Text_10m = "10m "
+                                        Text_30m = "30m "
+                                        Text_60m = "60m "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("en_UK") {
+                                            
+                                            Label("English(UK)", systemImage: "checkmark")
+                                        } else {
+                                            Label("English(UK)", systemImage: selectedLanguage == "en-UK" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 스페인어
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("es-ES")
+                                        selectedLanguage = "es-ES"
+                                        sectionText = "Configuraciones lingüísticas por país "
+                                        LangText = "El lenguaje "
+                                        ActText = "⚡️ activación ⚡️ "
+                                        InvText = "Intervalo: "
+                                        MinText = "Min "
+                                        StartText = "Comienzo "
+                                        StopText = "Detente. "
+                                        
+                                        
+                                        Text_1m = "1m "
+                                        Text_3m = "3m "
+                                        Text_5m = "5m "
+                                        Text_10m = "10m "
+                                        Text_30m = "30m "
+                                        Text_60m = "60m "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("es_") {
+                                            Label("Espagnol", systemImage: "checkmark")
+                                        } else {
+                                            Label("Espagnol", systemImage: selectedLanguage == "es-ES" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 중국어(홍콩기준)
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("zh-CN")
+                                        selectedLanguage = "zh-CN"
+                                        sectionText = "国家语言设置 "
+                                        LangText = "语文 "
+                                        ActText = "⚡️ 启动 ⚡️ "
+                                        InvText = "间隙: "
+                                        MinText = "分 "
+                                        StartText = "开始 "
+                                        StopText = "中止 "
+                                        Text_1m = "1分 "
+                                        Text_3m = "3分 "
+                                        Text_5m = "5分 "
+                                        Text_10m = "10分 "
+                                        Text_30m = "30分 "
+                                        Text_60m = "60分 "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("zh-") {
+                                            Label("中文", systemImage: "checkmark")
+                                        } else {
+                                            Label("中文", systemImage: selectedLanguage == "zh-CN" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 일본어
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("ja-JP")
+                                        selectedLanguage = "ja-JP"
+                                        sectionText = "国別言語設定 "
+                                        LangText = "げんご "
+                                        ActText = "⚡️ 活性化 ⚡️ "
+                                        InvText = "間隔: "
+                                        MinText = "分 "
+                                        StartText = "スタート "
+                                        StopText = "ストップ "
+                                        Text_1m = "1分 "
+                                        Text_3m = "3分 "
+                                        Text_5m = "5分 "
+                                        Text_10m = "10分 "
+                                        Text_30m = "30分 "
+                                        Text_60m = "60分 "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("ja_") {
+                                            Label("日本語", systemImage: "checkmark")
+                                        } else {
+                                            Label("日本語", systemImage: selectedLanguage == "ja-JP" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 독일어
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("de-DE")
+                                        selectedLanguage = "de-DE"
+                                        sectionText = "Spracheinstellungen "
+                                        LangText = "Sprache "
+                                        ActText = "⚡️ Aktivieren ⚡️ "
+                                        InvText = "Intervall: "
+                                        MinText = "Min "
+                                        StartText = "Beginn "
+                                        StopText = "Halt "
+                                        Text_1m = "1m "
+                                        Text_3m = "3m "
+                                        Text_5m = "5m "
+                                        Text_10m = "10m "
+                                        Text_30m = "30m "
+                                        Text_60m = "60m "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("de_") {
+                                            Label("Deutsch", systemImage: "checkmark")
+                                        } else {
+                                            Label("Deutsch", systemImage: selectedLanguage == "de-DE" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 프랑스어
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("fr-FR")
+                                        selectedLanguage = "fr-FR"
+                                        sectionText = "établissement des langues "
+                                        LangText = "Language "
+                                        ActText = "⚡️ Activation ⚡️ "
+                                        InvText = "Intervalle: "
+                                        MinText = "Min "
+                                        StartText = "Départ "
+                                        StopText = "Cessation "
+                                        Text_1m = "1m "
+                                        Text_3m = "3m "
+                                        Text_5m = "5m "
+                                        Text_10m = "10m "
+                                        Text_30m = "30m "
+                                        Text_60m = "60m "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("fr_") {
+                                            Label("Français", systemImage: "checkmark")
+                                        } else {
+                                            Label("Français", systemImage: selectedLanguage == "fr-FR" ? "checkmark" : "")
+                                        }
+                                    }
+                                    
+                                    Button(action: {
+                                        // 이탈리아어
+                                        isFirstLaunch = true
+                                        speechSynthesizer.updateSelectedLanguage("it-IT")
+                                        selectedLanguage = "it-IT"
+                                        sectionText = "Impostazione linguistica "
+                                        LangText = "Lingua "
+                                        ActText = "⚡️ Attivazione ⚡️ "
+                                        InvText = "Intervallo: "
+                                        MinText = "Min "
+                                        StartText = "princìpio "
+                                        StopText = "fermare "
+                                        Text_1m = "1m "
+                                        Text_3m = "3m "
+                                        Text_5m = "5m "
+                                        Text_10m = "10m "
+                                        Text_30m = "30m "
+                                        Text_60m = "60m "
+                                        UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
+                                    }) {
+                                        if selectedLanguage.hasPrefix("it_") {
+                                            Label("Lingua italiana", systemImage: "checkmark")
+                                        } else {
+                                            Label("Lingua italiana", systemImage: selectedLanguage == "it-IT" ? "checkmark" : "")
+                                        }
+                                    }
+                                }
+                                
+                            } label: {
+                                    Label(LocalizedStringKey(LangText), systemImage: "globe")
+                            }
+                            .onTapGesture {
+                                print("\(selectedLanguage)")
+                            }
+                            .padding(7)
+                            .padding(.leading, -3.0)
+                            .padding(.vertical, -5.0)
+                            .overlay(
                             RoundedRectangle(cornerRadius: 7)
-                                .stroke(colorScheme == .dark ? Color.white : Color.black, lineWidth: 2)
-                        )
-                        .imageScale(.large)
-                        .foregroundColor(colorScheme == .dark ? .white : .black)
-                        .padding(.top, 20)
+                            .stroke(colorScheme == .dark ? Color.white : Color.black, lineWidth: 2)
+                            )
+                            .imageScale(.large)
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .padding(.top, 20)
+                    )
+                        .overlay{
+                            VStack{
+                                if showToast {
+                                    ToastView(message: speakMode ? "보이스 모드 설정" : "진동모드 설정", showToast: $showToast)
+                                        .padding(.top, 160)
+                                }
+                                
+                            }
+                        }
+
                     }
                 }
-                
-                
+                               
                 Spacer()
                 
+                // Activating
                 if isUpdatingTime {
-                    Spacer()
+                    
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        Text(LocalizedStringKey(ActText))
+                            .font(.largeTitle)
+                            .bold()
+                            .italic()
+                            .transition(.scale)
+                    }
                 }
                 
                 // Time & Control
                 Group {
                     
-                    if isUpdatingTime {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            Text(LocalizedStringKey(ActText))
-                                .font(.title2)
-                                .bold()
-                                .italic()
-                                .transition(.scale)
-                        }
-                    }
-                    
-                    Toggle("소리모드", isOn:$speakMode)
-                        .padding(.horizontal, 135)
-                        .offset(x:0,y:-80)
+                    Spacer()
                 
                     Text(currentTime)
                         .font(.system(size: 50, weight: isUpdatingTime ? .heavy : .light))
@@ -637,6 +679,7 @@ struct ContentView: View {
                 }
             }
         }
+        
     }
 
     // 현재시각 표시
@@ -711,6 +754,33 @@ struct ContentView: View {
             speechSynthesizer.speak(timeString)
         } else {
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        }
+    }
+}
+
+struct ToastView: View {
+    let message: String
+    @Binding var showToast: Bool
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        ZStack {
+            Color(colorScheme == .dark ? .white : .black)
+                .opacity(0.7)
+                .cornerRadius(10)
+                .padding()
+            Text(message)
+                .foregroundColor(.white)
+                .padding()
+        }
+        .frame(maxWidth: 200, alignment: .center)
+        .opacity(showToast ? 1 : 0)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                withAnimation {
+                    showToast = false
+                }
+            }
         }
     }
 }
