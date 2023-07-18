@@ -416,8 +416,7 @@ struct ContentView: View {
                     
                     withAnimation(.easeInOut(duration: 0.3)) {
                         Text(LocalizedStringKey(ActText))
-                            .font(.largeTitle)
-                            .bold()
+                            .font(Font.largeTitle.weight(.bold))
                             .italic()
                             .transition(.scale)
                     }
@@ -435,17 +434,16 @@ struct ContentView: View {
                     HStack {
                         Text(LocalizedStringKey(InvText))
                             .padding(.top, 3.0)
-                            .font(.title2)
+                            .font(Font.title2.weight(.bold))
                         
                         Text("\(selectedInterval)")
-                            .font(.title)
+                            .font(Font.title.weight(.bold))
                         
                         Text(LocalizedStringKey(MinText))
                             .padding(.top, 3.0)
-                            .font(.title2)
+                            .font(Font.title2.weight(.bold))
                     }
                     .padding()
-                    .bold()
                     
                     HStack {
                         if !isUpdatingTime {
@@ -484,8 +482,7 @@ struct ContentView: View {
                             }
                         }) {
                             Text(isUpdatingTime ? LocalizedStringKey(StopText) : LocalizedStringKey(StartText))
-                                .bold()
-                                .font(.largeTitle)
+                                .font(Font.largeTitle.weight(.bold))
                                 .scaleEffect(isUpdatingTime &&
                                              (!["ja-JP", "es-ES", "fr-FR", "it-IT"].contains(selectedLanguage)
                                               || selectedLanguage.hasPrefix("ja_")
