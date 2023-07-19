@@ -734,6 +734,8 @@ struct ContentView: View {
             return 1
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 3
+        } else if deviceWidth < 500 { // more than upS..
+            return 3
         } else { // pad
             return 180
         }
@@ -748,6 +750,8 @@ struct ContentView: View {
             return 1
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 3
+        } else if deviceWidth < 500 { // more than upS..
+            return 10
         } else { // pad
             return 20
         }
@@ -762,6 +766,8 @@ struct ContentView: View {
             return 40
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 50
+        } else if deviceWidth < 500 { // more than upS..
+            return 65
         } else { // pad
             return 150
         }
@@ -776,6 +782,8 @@ struct ContentView: View {
             return 40
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 45
+        } else if deviceWidth < 500 { // more than upS..
+            return 55
         } else { // pad
             return 100
         }
@@ -790,6 +798,8 @@ struct ContentView: View {
             return 20
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 20
+        } else if deviceWidth < 500 { // more than upS..
+            return 30
         } else { // pad
             return 50
         }
@@ -804,6 +814,8 @@ struct ContentView: View {
             return 20
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 30
+        } else if deviceWidth < 500 { // more than upS..
+            return 40
         } else { // pad
             return 50
         }
@@ -818,6 +830,8 @@ struct ContentView: View {
             return 25
         } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
             return 35
+        } else if deviceWidth < 500 { // more than upS..
+            return 40
         } else { // pad
             return 50
         }
