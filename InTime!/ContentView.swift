@@ -64,24 +64,31 @@ struct ContentView: View {
         
         ZStack {
             if isUpdatingTime {
-                Circle()
-                    .stroke(
-                        Color.pink.opacity(0.5),
-                        lineWidth: 30
-                    )
-                    .frame(width:335, height:335)
-                Circle()
-                    .trim(from: 0, to: CGFloat(progress))
-                    .stroke(
-                        Color.pink,
-                        style: StrokeStyle(
-                            lineWidth: 30,
-                            lineCap: .round
-                        )
-                    )
-                    .animation(.easeOut, value: progress)
-                    .rotationEffect(.degrees(-90))
-                    .frame(width:335, height:335)
+                GeometryReader { geometry in
+                    let size = min(geometry.size.width, geometry.size.height) * 0.9 // 너비와 높이 중 작은 값으로 크기 조정
+
+                        Circle()
+                            .stroke(
+                                Color.pink.opacity(0.5),
+                                lineWidth: size * 0.09 // 크기에 비례하여 선 두께 조정
+                            )
+                            .frame(width: size, height: size)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2) // 화면 중앙 좌표로 위치 지정
+                        
+                        Circle()
+                            .trim(from: 0, to: CGFloat(progress))
+                            .stroke(
+                                Color.pink,
+                                style: StrokeStyle(
+                                    lineWidth: size * 0.09, // 크기에 비례하여 선 두께 조정
+                                    lineCap: .round
+                                )
+                            )
+                            .animation(.easeOut, value: progress)
+                            .rotationEffect(.degrees(-90))
+                            .frame(width: size, height: size)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2) // 화면 중앙 좌표로 위치 지정
+                    }
             }
             
             VStack{
@@ -110,8 +117,9 @@ struct ContentView: View {
                                 
                             }, label: {
                                 Image(systemName: speakMode ? "person.wave.2" : "iphone.radiowaves.left.and.right")
+                                    .font(.system(size: imageSizeForDevice2(), weight: .bold))
                                     .foregroundColor(colorScheme == .dark ? .white : .black)
-                                    .font(.largeTitle)
+                                    
                                     .transition(.scale)
                                     .padding(.top, 20)
                                     .padding(.trailing, 20)
@@ -384,10 +392,10 @@ struct ContentView: View {
                                         }
                                     }
                                 }
-                                
                             } label: {
                                     Label(LocalizedStringKey(LangText), systemImage: "globe")
                             }
+                                .font(.system(size: imageSizeForDevice3(), weight: .bold))
                             .onTapGesture {
                                 print("\(selectedLanguage)")
                             }
@@ -422,9 +430,10 @@ struct ContentView: View {
                     
                     withAnimation(.easeInOut(duration: 0.3)) {
                         Text(LocalizedStringKey(ActText))
-                            .font(Font.largeTitle.weight(.bold))
+                            .font(.system(size: fontSizeForDevice5(), weight: .bold))
                             .italic()
                             .transition(.scale)
+                            .padding(.top, paddingSizeForDevice())
                     }
                 }
                 
@@ -434,21 +443,24 @@ struct ContentView: View {
                     Spacer()
                 
                     Text(currentTime)
-                        .font(.system(size: 50, weight: isUpdatingTime ? .heavy : .light))
+                        .font(.system(size: fontSizeForDevice(), weight: isUpdatingTime ? .heavy : .light))
                         .padding()
                     
                     HStack {
                         Text(LocalizedStringKey(InvText))
                             .padding(.top, 3.0)
-                            .font(Font.title2.weight(.bold))
+                            .font(.system(size: fontSizeForDevice3()))
                         
                         Text("\(selectedInterval)")
-                            .font(Font.title.weight(.bold))
+                            .font(.system(size: fontSizeForDevice3(), weight: .bold))
+                            .padding(.top, 2)
+                            
                         
                         Text(LocalizedStringKey(MinText))
                             .padding(.top, 3.0)
-                            .font(Font.title2.weight(.bold))
+                            .font(.system(size: fontSizeForDevice3()))
                     }
+                    
                     .padding()
                     
                     HStack {
@@ -471,9 +483,12 @@ struct ContentView: View {
                                 
                             }, label: {
                                 Image(systemName: "arrowtriangle.backward")
+                                    .resizable()
                                     .foregroundColor(colorScheme == .dark ? .white : .black)
                                     .font(.title2)
+                                    .frame(width: imageSizeForDevice(), height: imageSizeForDevice())
                                     .transition(.scale)
+                                    .padding(.trailing, paddingSizeForDevice2())
                                     
                             })
                         }
@@ -488,7 +503,7 @@ struct ContentView: View {
                             }
                         }) {
                             Text(isUpdatingTime ? LocalizedStringKey(StopText) : LocalizedStringKey(StartText))
-                                .font(Font.largeTitle.weight(.bold))
+                                .font(.system(size: fontSizeForDevice2(), weight: .bold))
                                 .scaleEffect(isUpdatingTime &&
                                              (!["ja-JP", "es-ES", "fr-FR", "it-IT"].contains(selectedLanguage)
                                               || selectedLanguage.hasPrefix("ja_")
@@ -513,9 +528,13 @@ struct ContentView: View {
                                 
                             }, label: {
                                 Image(systemName: "arrowtriangle.forward")
+                                    .resizable()
+                                    .frame(width: imageSizeForDevice(), height: imageSizeForDevice())
                                     .foregroundColor(colorScheme == .dark ? .white : .black)
                                     .font(.title2)
                                     .transition(.scale)
+                                    .padding(.leading, paddingSizeForDevice2())
+                                
                             })
                         }
                         
@@ -544,7 +563,7 @@ struct ContentView: View {
                                     }, label: {
                                         Text(LocalizedStringKey(Text_1m))
                                             .scaleEffect(btn1_selected ? 1.5 : 1.0)
-                                            .font(.system(size: 30))
+                                            .font(.system(size: fontSizeForDevice4(), weight: .bold))
                                             .foregroundColor(colorScheme == .dark ? .white : .black)
                                     })
                                     .offset(x:-40,y:0)
@@ -567,8 +586,7 @@ struct ContentView: View {
                                     }, label : {
                                         Text(LocalizedStringKey(Text_3m))
                                             .scaleEffect(btn3_selected ? 1.5 : 1.0)
-                                            .font(.system(size: 30))
-                                            .font(.system(size: 30))
+                                            .font(.system(size: fontSizeForDevice4(), weight: .bold))
                                             .foregroundColor(colorScheme == .dark ? .white : .black)
                                     })
                                     .offset(x:0,y:0)
@@ -590,7 +608,7 @@ struct ContentView: View {
                                         }
                                     }, label : {
                                         Text(LocalizedStringKey(Text_5m))
-                                            .font(.system(size: 30))
+                                            .font(.system(size: fontSizeForDevice4(), weight: .bold))
                                             .scaleEffect(btn5_selected ? 1.5 : 1.0)
                                             .foregroundColor(colorScheme == .dark ? .white : .black)
                                     })
@@ -617,7 +635,7 @@ struct ContentView: View {
                                         }
                                     }, label : {
                                         Text(LocalizedStringKey(Text_10m))
-                                            .font(.system(size: 30))
+                                            .font(.system(size: fontSizeForDevice4(), weight: .bold))
                                             .scaleEffect(btn10_selected ? 1.5 : 1.0)
                                             .foregroundColor(colorScheme == .dark ? .white : .black)
                                         
@@ -640,7 +658,7 @@ struct ContentView: View {
                                         }
                                     }, label : {
                                         Text(LocalizedStringKey(Text_30m))
-                                            .font(.system(size: 30))
+                                            .font(.system(size: fontSizeForDevice4(), weight: .bold))
                                             .scaleEffect(btn30_selected ? 1.5 : 1.0)
                                             .foregroundColor(colorScheme == .dark ? .white : .black)
                                     })
@@ -661,7 +679,7 @@ struct ContentView: View {
                                         }
                                     }, label : {
                                         Text(LocalizedStringKey(Text_60m))
-                                            .font(.system(size: 30))
+                                            .font(.system(size: fontSizeForDevice4(), weight: .bold))
                                             .scaleEffect(btn60_selected ? 1.5 : 1.0)
                                             .foregroundColor(colorScheme == .dark ? .white : .black)
                                     })
@@ -705,6 +723,137 @@ struct ContentView: View {
             }
         }
         
+    }
+    
+    // 활성화 패딩
+    func paddingSizeForDevice() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 1
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 3
+        } else { // pad
+            return 180
+        }
+    }
+    
+    // 인터벌 조정 패딩
+    func paddingSizeForDevice2() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 1
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 3
+        } else { // pad
+            return 20
+        }
+    }
+    
+    // 현재 시각
+    func fontSizeForDevice() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 40
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 50
+        } else { // pad
+            return 150
+        }
+    }
+    
+    // 스타트, 스탑
+    func fontSizeForDevice2() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 40
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 45
+        } else { // pad
+            return 100
+        }
+    }
+    
+    // 인터벌 표시
+    func fontSizeForDevice3() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 20
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 20
+        } else { // pad
+            return 50
+        }
+    }
+    
+    // 퀵버튼 표시
+    func fontSizeForDevice4() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 20
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 30
+        } else { // pad
+            return 50
+        }
+    }
+    
+    // 활성화 표시
+    func fontSizeForDevice5() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        // 디바이스 크기에 따라 적절한 폰트 크기 반환
+        if deviceWidth < 375 { // iPhone 6/7/8, SE (2nd generation)
+            return 25
+        } else if deviceWidth < 430 { // iPhone 6/7/8 Plus, XR, 11, iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+            return 35
+        } else { // pad
+            return 50
+        }
+    }
+    
+    // 인터벌 조정 이미지
+    func imageSizeForDevice() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        if deviceWidth < 700 { // 아이폰
+            return 20
+        } else { // 패드
+            return 60
+        }
+    }
+    
+    // 모드전환 이미지
+    func imageSizeForDevice2() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        if deviceWidth < 700 { // 아이폰
+            return 25
+        } else { // 패드
+            return 60
+        }
+    }
+    
+    // 언어변환 이미지
+    func imageSizeForDevice3() -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.width
+        
+        if deviceWidth < 700 { // 아이폰
+            return 15
+        } else { // 패드
+            return 50
+        }
     }
 
     // 현재시각 표시
