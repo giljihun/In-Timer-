@@ -10,7 +10,7 @@ import UIKit
 
 class SpeechSynthesizer : ObservableObject {
     private let synthesizer: AVSpeechSynthesizer
-    @Published var selectedLanguage: String = "en-US" {
+    @Published var selectedLanguage: String = Locale.current.identifier {
         didSet {
             UserDefaults.standard.set(selectedLanguage, forKey: "selectedLanguage")
         }
@@ -22,6 +22,8 @@ class SpeechSynthesizer : ObservableObject {
     }
 
     func speak(_ text: String) {
+        
+        print("\(selectedLanguage)")
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: selectedLanguage)
         utterance.rate = 0.4

@@ -7,8 +7,14 @@
 
 import SwiftUI
 import AVFAudio
+import UIKit
 
 struct ContentView: View {
+    
+    init() {
+            // 화면 자동 잠금 기능 비활성화
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
     
     @State private var currentTime: String = ""
     @State private var selectedInterval: Int = 1
@@ -675,7 +681,9 @@ struct ContentView: View {
                         updateTime()
                         if isFirstLaunch == false {
                             selectedLanguage = Locale.current.identifier
-                        }
+                            print("first Launched")
+                            print("\(selectedLanguage)")
+                        } else {print("already have launched")}
                     }
                 }
                 
