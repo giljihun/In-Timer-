@@ -13,7 +13,7 @@
 
 </br>
 
-## Project Duration프로젝트 기간
+## Project Duration
 
 #### Planning & Development
 `2023.06.30` ~ `2023.07.18.`
