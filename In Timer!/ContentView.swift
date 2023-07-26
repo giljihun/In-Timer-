@@ -8,13 +8,16 @@
 import SwiftUI
 import AVFAudio
 import UIKit
+import UserNotifications
 
 struct ContentView: View {
     
+    let taskIdentifier = "com.example.myBackgroundTask"
+    
+    // 화면 자동 잠금 기능 비활성화
     init() {
-            // 화면 자동 잠금 기능 비활성화
             UIApplication.shared.isIdleTimerDisabled = true
-        }
+    }
     
     @State private var currentTime: String = ""
     @State private var selectedInterval: Int = 1
@@ -712,6 +715,7 @@ struct ContentView: View {
                 print("Selected Language: \(newValue)")
             }
             .onAppear {
+                         
                 do {
                     let audioSession = AVAudioSession.sharedInstance()
                     try audioSession.setCategory(.playback, mode: .default, options: [.duckOthers, .mixWithOthers])
@@ -891,6 +895,7 @@ struct ContentView: View {
 
     // Stop Btn -> 생성된 인터벌객체 중지 및 제거
     func stopUpdatingTime() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["TargetTimeNotification"])
         isUpdatingTime = false
         targetTimeWorkItem?.cancel()
         targetTimeWorkItem = nil
@@ -953,6 +958,8 @@ struct ContentView: View {
                 self.progress = max(0, min(1, currentProgressPercentage))
             }
         }
+        
+        scheduleNotification(at: targetTime)
 
     }
     
@@ -969,6 +976,33 @@ struct ContentView: View {
         }
     }
 
+    // ********* t e s t ************
+    func scheduleNotification(at targetTime: Date) {
+        let content = UNMutableNotificationContent()
+        content.title = "! In Time !"
+        // t e s t
+        content.body = "! In Time !"
+        content.sound = UNNotificationSound.default
+
+        // 타겟 시간에 알림이 울리도록 UNCalendarNotificationTrigger를 생성합니다.
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: targetTime)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        
+        print("알람 예정 포인트 : \(components)")
+
+        // 알림 요청 생성
+        let request = UNNotificationRequest(identifier: "TargetTimeNotification", content: content, trigger: trigger)
+
+        // 알림 요청 등록
+        UNUserNotificationCenter.current().add(request) { (error) in
+            if let error = error {
+                print("알림 등록 에러: \(error)")
+            }
+        }
+    }
+    
+    
     // 무음모드 여부를 판단하여 소리 or 진동 출력
     func speakCurrentTime() {
         
