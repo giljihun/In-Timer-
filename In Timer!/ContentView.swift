@@ -895,10 +895,30 @@ struct ContentView: View {
 
     // Stop Btn -> 생성된 인터벌객체 중지 및 제거
     func stopUpdatingTime() {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["TargetTimeNotification"])
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["TargetTimeNotificationFirst"])
+        
+        var identifiersToRemove: [String] = []
+        let FirstIdentifier = "TargetTimeNotificationFirst"
+        let LastIdentifier = "TargetTimeNotificationLast"
+        identifiersToRemove.append(FirstIdentifier)
+        identifiersToRemove.append(LastIdentifier)
+        
+        for i in 1...60 { // 또는 1...100 등, 알림 요청을 생성한 범위에 맞게 수정
+                let identifiers = "TargetTimeNotification\(i)"
+                identifiersToRemove.append(identifiers)
+            }
+        
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
+        
         isUpdatingTime = false
         targetTimeWorkItem?.cancel()
         targetTimeWorkItem = nil
+        
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                for request in requests {
+                    print("Scheduled notification identifier: \(request.identifier)")
+                }
+            }
     }
 
     // nextTarget을 조정하여 생성
@@ -924,6 +944,7 @@ struct ContentView: View {
         }
         
         let targetTime = calendar.date(bySettingHour: nextTargetHour, minute: nextTargetMinute, second: 0, of: Date())!
+        
         let timeDiff = targetTime.timeIntervalSinceNow
         
         // 계산된 진행도를 설정합니다.
@@ -959,7 +980,35 @@ struct ContentView: View {
             }
         }
         
-        scheduleNotification(at: targetTime)
+        let firstIdentifier = "TargetTimeNotificationFirst"
+        scheduleNotification(at: targetTime, identifier: firstIdentifier)
+        
+        
+        for i in 1...60 {
+            let identifier = "TargetTimeNotification\(i)"
+            let minute = nextTargetMinute + (selectedInterval * i)
+            var hour = nextTargetHour + (minute / 60) // minute가 60을 초과하면 hour를 증가
+            let minuteRemainder = minute % 60
+            if minuteRemainder >= 60 {
+                hour += 1
+            }
+            let newtargetTime = calendar.date(bySettingHour: hour, minute: minuteRemainder, second: 0, of: Date())!
+                
+            scheduleNotification(at: newtargetTime, identifier: identifier)
+        }
+        
+        let lastIdentifier = "TargetTimeNotificationLast"
+        let targetInterval = selectedInterval * 60 // 60번째 알림까지의 간격 계산
+        let hourOffset = targetInterval / 60 // 30번째 알림까지의 시간 간격을 시간으로 변환
+        let minuteRemainder = targetInterval % 60 // 30번째 알림까지의 시간 간격에서 남은 분 계산
+        
+        let currentDate = Date()
+        let lasttargetTime = calendar.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+        let lasttargetTimeWithMinutes = calendar.date(byAdding: .minute, value: minuteRemainder, to: lasttargetTime)!
+
+        
+
+        scheduleNotificationLast(at: lasttargetTimeWithMinutes, identifier: lastIdentifier)
 
     }
     
@@ -977,11 +1026,14 @@ struct ContentView: View {
     }
 
     // ********* t e s t ************
-    func scheduleNotification(at targetTime: Date) {
+    func scheduleNotification(at targetTime: Date, identifier: String) {
         let content = UNMutableNotificationContent()
-        content.title = "! In Time !"
-        // t e s t
-        content.body = "! In Time !"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        let currentTimeString = dateFormatter.string(from: Date())
+        
+        content.title = "In Timer!"
+        content.body = "현재 시각은 \(currentTimeString) 입니다."
         content.sound = UNNotificationSound.default
 
         // 타겟 시간에 알림이 울리도록 UNCalendarNotificationTrigger를 생성합니다.
@@ -992,7 +1044,7 @@ struct ContentView: View {
         print("알람 예정 포인트 : \(components)")
 
         // 알림 요청 생성
-        let request = UNNotificationRequest(identifier: "TargetTimeNotification", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
         // 알림 요청 등록
         UNUserNotificationCenter.current().add(request) { (error) in
@@ -1001,7 +1053,34 @@ struct ContentView: View {
             }
         }
     }
-    
+    // ********* t e s t ************
+    func scheduleNotificationLast(at targetTime: Date, identifier: String) {
+        let content = UNMutableNotificationContent()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss"
+        let currentTimeString = dateFormatter.string(from: Date())
+        content.title = "In Timer!"
+        content.subtitle = "! 시스템 자원을 위한 마지막 알림입니다. !"
+        content.body = "현재 시각은 \(currentTimeString) 입니다."
+        content.sound = UNNotificationSound.default
+
+        // 타겟 시간에 알림이 울리도록 UNCalendarNotificationTrigger를 생성합니다.
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: targetTime)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        
+        print("알람 예정 포인트 : \(components)")
+
+        // 알림 요청 생성
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        // 알림 요청 등록
+        UNUserNotificationCenter.current().add(request) { (error) in
+            if let error = error {
+                print("알림 등록 에러: \(error)")
+            }
+        }
+    }
     
     // 무음모드 여부를 판단하여 소리 or 진동 출력
     func speakCurrentTime() {
