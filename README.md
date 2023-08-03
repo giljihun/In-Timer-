@@ -38,3 +38,4 @@ Additionally, you can access voice and translation functions in various language
 https://apps.apple.com/kr/app/in-timer/id6451440300
 
 </br>
+
