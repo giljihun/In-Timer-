@@ -899,9 +899,8 @@ struct ContentView: View {
         
         var identifiersToRemove: [String] = []
         let FirstIdentifier = "TargetTimeNotificationFirst"
-        let LastIdentifier = "TargetTimeNotificationLast"
         identifiersToRemove.append(FirstIdentifier)
-        identifiersToRemove.append(LastIdentifier)
+
         
         for i in 1...60 { // 또는 1...100 등, 알림 요청을 생성한 범위에 맞게 수정
                 let identifiers = "TargetTimeNotification\(i)"
