@@ -1024,8 +1024,8 @@ struct ContentView: View {
         let currentTimeString = dateFormatter.string(from: targetTime)
         
         content.title = "In Timer!"
-        content.body = "현재 시각은 \(currentTimeString) 입니다."
-        content.sound = UNNotificationSound.default
+        content.body = "📢 \(currentTimeString)"
+        content.sound = UNNotificationSound.defaultCritical
 
         // 타겟 시간에 알림이 울리도록 UNCalendarNotificationTrigger를 생성합니다.
         let calendar = Calendar.current
