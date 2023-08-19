@@ -33,7 +33,7 @@ Additionally, you can access voice and translation functions in various language
 
 ## Update Content
 
-Verson 1.1 - You can get Notifications of Interval Time in background.
+[Lastest] Verson 1.1 - You can get Notifications of Interval Time in background.
 
 
 (원하는 대로 음성 안내 간격을 설정하거나 대신 진동 모드를 선택할 수 있습니다.
