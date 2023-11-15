@@ -1,6 +1,6 @@
 # In Timer!
 
-<img width="127" alt="image" src="https://github.com/giljihun/In-Timer-/assets/75918176/90c79162-ad21-448c-82cd-073b75c2e585">
+<p align="center"><img width="200" alt="image" src="https://github.com/giljihun/In-Timer-/assets/75918176/90c79162-ad21-448c-82cd-073b75c2e585"></p>
 
 
 ---
@@ -11,9 +11,19 @@
 
 ## SUMMARY
 
-> It is an app that gives voice notifications at each time when you set the desired interval.
-> 
-> (원하는 인터벌을 설정하면 해당 시각마다 음성알림을 주는 앱입니다)
+It is an app that gives voice notifications at each time when you set the desired interval.
+
+(원하는 인터벌을 설정하면 해당 시각마다 음성알림을 주는 앱입니다)
+
+</br>
+
+## MOTIVE
+
+In the process of constantly checking the time every morning and preparing
+I thought it would be convenient if I could just put my cell phone far away and listen to it by voice.
+
+(매일 아침 시간을 지속적으로 확인하며 준비하는 과정에서
+그냥 휴대폰은 저 멀리 두고 음성으로 들을 수 있으면 편하겠다 생각했다.)
 
 </br>
 
@@ -27,7 +37,9 @@
 ## FEATURE INTRODUCTION
 
 You can set voice guidance intervals as you prefer, or opt for vibration mode instead. 
-Additionally, you can access voice and translation functions in various languages of your choice.
+Additionally, you can access voice and translation functions in various languages of your choice.  
+
+(음성 안내 간격을 원하는 대로 설정하거나 진동 모드를 선택할 수 있으며, 음성 및 번역 기능을 원하는 언어로 이용할 수 있습니다.)
 
 </br>
 
