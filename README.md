@@ -9,6 +9,14 @@
 
 <img src="https://img.shields.io/badge/swift-F05138?style=for-the-badge&logo=swift&logoColor=white">
 
+## PREVIEW
+
+<p align='center'>
+<img width="300" src="https://github.com/giljihun/In-Timer-/assets/75918176/051118e6-f9fb-41f5-8cd8-22689224da0d">
+<img width="300" src="https://github.com/giljihun/In-Timer-/assets/75918176/d1ed6ad5-8e40-48d7-8019-bae4d57243c8"> 
+<img width="300" src="https://github.com/giljihun/In-Timer-/assets/75918176/17defe09-ac29-410e-a018-a68f9be83105">
+</p>
+
 ## SUMMARY
 
 It is an app that gives voice notifications at each time when you set the desired interval.
