@@ -1,5 +1,8 @@
 # In Timer!
 
+> 제가 학부연구생 시절, 교수님 애플 계정으로 앱스토어 등록한 앱입니다. 
+현재는 앱스토어에서 자동 검수로 내려가서 다운로드는 불가능합니다.
+
 <p align="center"><img width="200" alt="image" src="https://github.com/giljihun/In-Timer-/assets/75918176/3e55de26-cd63-463f-820f-42ff733de367"></p>
 
 ---
